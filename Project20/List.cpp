@@ -81,6 +81,74 @@ public:
         head = tail = nullptr;
     }
 
+    int find(const T& value) {
+        Node<T>* node = head;
+        int position = 0;
+        while (node) {
+            if (node->data == value) {
+                return position;
+            }
+            node = node->next;
+            position++;
+        }
+        return -1;
+    }
+
+    void erase(int position) {
+        if (position < 0) return;
+
+        Node<T>* node = head;
+        int currentPos = 0;
+
+        while (node) {
+            if (currentPos == position) {
+                if (node->prev) {
+                    node->prev->next = node->next;
+                }
+                else {
+                    head = node->next;
+                }
+
+                if (node->next) {
+                    node->next->prev = node->prev;
+                }
+                else {
+                    tail = node->prev;
+                }
+
+                delete node;
+                return;
+            }
+            node = node->next;
+            currentPos++;
+        }
+    }
+
+    void reverse() {
+        Node<T>* node = head;
+        Node<T>* temp = nullptr;
+
+        while (node) {
+            temp = node->prev;
+            node->prev = node->next;
+            node->next = temp;
+            node = node->prev;
+        }
+
+        if (temp) {
+            head = temp->prev;
+        }
+    }
+
+    void print() {
+        Node<T>* node = head;
+        while (node) {
+            std::cout << node->data << " ";
+            node = node->next;
+        }
+        std::cout << std::endl;
+    }
+
     ~List() {
         clear();
     }
@@ -88,19 +156,26 @@ public:
 
 int main() {
     List<int> list;
+
     list.push_back(10);
-    list.push_front(5);
     list.push_back(20);
+    list.push_back(30);
+    list.push_back(40);
+    list.push_front(5);
 
-    std::cout << "Front: " << list.front() << std::endl;
-    std::cout << "Back: " << list.back() << std::endl;
+    std::cout << "List after adding elements: ";
+    list.print();
 
-    list.pop_front();
-    list.pop_back();
+    int pos = list.find(20);
+    std::cout << "Position of 20: " << pos << std::endl;
 
-    std::cout << "After pops:" << std::endl;
-    std::cout << "Front: " << list.front() << std::endl;
-    std::cout << "Back: " << list.back() << std::endl;
+    list.erase(2);
+    std::cout << "List after erasing element at position 2: ";
+    list.print();
+
+    list.reverse();
+    std::cout << "List after reversing: ";
+    list.print();
 
     return 0;
 }
